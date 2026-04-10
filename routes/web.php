@@ -1,13 +1,20 @@
 <?php
 
-use App\Http\Controllers\VagaController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-// Página inicial de listagem
-Route::get('/vagas', [VagaController::class, 'index'])->name('vagas.index');
+Route::get('/', function () {
+    return view('welcome');
+});
 
-// Página do formulário de cadastro
-Route::get('/vagas/criar', [VagaController::class, 'create'])->name('vagas.create');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-// Rota que recebe os dados do formulário e salva no banco
-Route::post('/vagas', [VagaController::class, 'store'])->name('vagas.store');
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+require __DIR__.'/auth.php';
