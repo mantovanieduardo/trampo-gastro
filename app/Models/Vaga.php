@@ -18,6 +18,7 @@ class Vaga extends Model
         'titulo_vaga',
         'tipo_contrato',
         'valor_diaria',
-        'status_vaga'
+        'status_vaga',
+        'data_hora_inicio'
     ];
 }

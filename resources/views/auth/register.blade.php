@@ -35,6 +35,15 @@
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
+        <div class="mt-4">
+        <x-input-label for="tipo" :value="__('Eu sou:')" />
+        <select id="tipo" name="tipo" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+            <option value="garcom">{{ __('Garçom / Freelancer') }}</option>
+            <option value="restaurante">{{ __('Restaurante / Estabelecimento') }}</option>
+        </select>
+        <x-input-error :messages="$errors->get('tipo')" class="mt-2" />
+        </div>
+
         <div class="flex items-center justify-end mt-4">
             <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
                 {{ __('Já tem cadastro?') }}

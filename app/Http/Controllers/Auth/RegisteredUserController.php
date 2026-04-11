@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB; // <--- 1. NÃO ESQUEÇA DESTA LINHA!
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
  
@@ -25,13 +26,24 @@ class RegisteredUserController extends Controller
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'tipo'     => ['required', 'string', 'in:garcom,restaurante'],
         ]);
- 
+
+        // 2. PRIMEIRO: Criamos o usuário (para gerar o ID dele)
         $user = User::create([
             'name'     => $request->name,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
+            'tipo'     => $request->tipo,
         ]);
+
+        // 3. DEPOIS: Se ele for restaurante, usamos o ID que acabou de ser criado
+        if ($user->tipo === 'restaurante') {
+            DB::table('restaurantes')->insert([
+                'usuario_id'    => $user->id,
+                'nome_fantasia' => $user->name,
+            ]);
+        }
  
         event(new Registered($user));
  
