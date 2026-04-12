@@ -1,5 +1,4 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20Logo%20Lockup%20Vertical/2%20Logo%20Lockup%20Vertical%20Black.svg" width="120" alt="Logo">
   <h1>🍴 Trampo Gastro</h1>
   <p><b>Arquitetura Full-Stack para Gestão de Freelancers</b></p>
 
