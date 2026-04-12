@@ -1,59 +1,113 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center">
+  <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20Logo%20Lockup%20Vertical/2%20Logo%20Lockup%20Vertical%20Black.svg" width="120" alt="Logo">
+  <h1>🍴 Trampo Gastro</h1>
+  <p><b>Arquitetura Full-Stack para Gestão de Freelancers</b></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+  <img src="https://img.shields.io/badge/PHP-8.1+-777BB4?style=for-the-badge&logo=php&logoColor=white">
+  <img src="https://img.shields.io/badge/Laravel-10.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white">
+  <img src="https://img.shields.io/badge/Security-RBAC-green?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Tailwind-3.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white">
+</div>
 
-## About Laravel
+<br>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 📖 Visão Geral
+O **Trampo Gastro** é um ecossistema desenvolvido para automatizar a contratação de garçons freelancers. Diferente de sistemas genéricos, ele aplica regras de negócio rígidas para garantir que o fluxo entre a publicação da vaga e a confirmação na agenda seja à prova de falhas.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🛡️ Camada de Segurança: O Middleware `checkTipo`
+O grande diferencial técnico do projeto é a implementação do **RBAC (Role-Based Access Control)** através de um Middleware customizado. 
 
-## Learning Laravel
+Ao contrário de validações simples na View, o `checkTipo` atua na camada de requisição:
+<ul>
+  <li><b>Isolamento de Rotas:</b> Intercepta a chamada e valida se o <code>Auth::user()->tipo</code> corresponde ao parâmetro esperado (<code>restaurante</code> ou <code>garcom</code>).</li>
+  <li><b>Proteção de Kernel:</b> Caso um Garçom tente acessar manualmente a URL de criação de vagas (<code>/vagas/create</code>), o Middleware aborta a operação e redireciona o usuário, garantindo que o Controller nunca processe dados não autorizados.</li>
+  <li><b>Consistência:</b> Permite que rotas com nomes semelhantes sejam tratadas com lógicas completamente distintas baseadas no perfil.</li>
+</ul>
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🏗️ Engenharia e Persistência
 
-## Laravel Sponsors
+<table width="100%">
+  <tr>
+    <td width="50%">
+      <b>Transactions (ACID)</b><br>
+      Utilização de <code>DB::transaction</code> no match de candidaturas. Se a atualização da vaga falhar, a aprovação do garçom é revertida automaticamente, evitando inconsistência.
+    </td>
+    <td width="50%">
+      <b>Eloquent & Query Builder</b><br>
+      Abstração completa de SQL para prevenir <i>SQL Injection</i>. Consultas complexas com <code>Join</code> para montar a agenda em tempo real.
+    </td>
+  </tr>
+</table>
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## 🗄️ Modelo de Dados (Dicionário Técnico)
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+<table width="100%">
+  <thead>
+    <tr>
+      <th align="left">Entidade</th>
+      <th align="left">Papel no Sistema</th>
+      <th align="left">Regra de Integridade</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>users</code></td>
+      <td>Identidade e Credenciais.</td>
+      <td>Coluna <code>tipo</code> define o comportamento do Middleware.</td>
+    </tr>
+    <tr>
+      <td><code>restaurantes</code></td>
+      <td>Extensão do perfil para empresas.</td>
+      <td>Relacionamento 1:1 com <code>users</code> via FK.</td>
+    </tr>
+    <tr>
+      <td><code>vagas</code></td>
+      <td>Postagens de oportunidades.</td>
+      <td>FK <code>restaurante_id</code>. Status controlado via Transaction.</td>
+    </tr>
+    <tr>
+      <td><code>candidaturas</code></td>
+      <td>Vínculo Freelancer-Vaga.</td>
+      <td>Unique Constraint entre <code>vaga_id</code> e <code>usuario_id</code>.</td>
+    </tr>
+  </tbody>
+</table>
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 📸 Demonstração Visual
 
-## Code of Conduct
+<div align="center">
+  <b>1. Dashboard com RBAC Ativo</b><br>
+  <img src="public/img/dashboard.png" width="800" style="border-radius: 8px; border: 1px solid #ddd;"><br><br>
+  
+  <b>2. Publicação de Vagas (Lógica de Restaurante)</b><br>
+  <img src="public/img/vagas.png" width="800" style="border-radius: 8px; border: 1px solid #ddd;"><br><br>
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+  <b>3. Agenda Confirmada (Lógica de Garçom)</b><br>
+  <img src="public/img/agenda.png" width="800" style="border-radius: 8px; border: 1px solid #ddd;">
+</div>
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## ⚙️ Setup de Desenvolvimento
 
-## License
+```bash
+# Instalação de dependências
+composer install && npm install
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Build de Assets & Vite
+npm run build
+
+# Configuração de Ambiente
+cp .env.example .env && php artisan key:generate
+
+# Migrations & Server
+php artisan migrate
+php artisan serve
