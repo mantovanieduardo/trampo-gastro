@@ -21,8 +21,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // ESTA ROTA FICA AQUI (Fora dos grupos específicos)
-    // Agora tanto Garçom quanto Restaurante podem "Ver todas as vagas"
     Route::get('/vagas', [VagaController::class, 'index'])->name('vagas.index');
 
     // --- SÓ RESTAURANTE ---

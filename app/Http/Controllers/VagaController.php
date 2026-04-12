@@ -61,14 +61,14 @@ class VagaController extends Controller
 
     public function aprovarCandidato($candidaturaId)
 {
-    // 1. Busca a candidatura
+    // Busca a candidatura
     $candidatura = DB::table('candidaturas')->where('id', $candidaturaId)->first();
 
     if (!$candidatura) {
         return redirect()->back()->with('error', 'Candidatura não encontrada.');
     }
 
-    // 2. Segurança Lógica: Verifica se quem está aprovando é o dono da vaga
+    //  Segurança Lógica: Verifica se quem está aprovando é o dono da vaga
     $vaga = DB::table('vagas')->where('vaga_id', $candidatura->vaga_id)->first();
     $restaurante = DB::table('restaurantes')->where('usuario_id', Auth::id())->first();
 
@@ -76,7 +76,7 @@ class VagaController extends Controller
         return redirect()->back()->with('error', 'Ação não autorizada.');
     }
 
-    // 3. Inicia uma Transação para garantir que ou muda tudo ou não muda nada
+    // Inicia uma Transação para garantir que ou muda tudo ou não muda nada
     DB::transaction(function () use ($candidatura, $vaga) {
         // Muda o status da candidatura
         DB::table('candidaturas')
@@ -143,7 +143,6 @@ class VagaController extends Controller
     // Salva os dados no banco
     public function store(Request $request)
     {
-        // 1. A NOVA CAMADA DE SEGURANÇA: Validação Rigorosa
         $request->validate([
             'titulo'     => 'required|string|min:5|max:100', // Obrigatório, texto, entre 5 e 100 letras
             'valor_pago' => 'required|numeric|min:10',       // Obrigatório, número, no mínimo 10 reais
