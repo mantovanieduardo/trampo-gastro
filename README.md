@@ -88,10 +88,10 @@ Ao contrário de validações simples na View, o `checkTipo` atua na camada de r
   <img src="public/img/dashboard.png" width="800" style="border-radius: 8px; border: 1px solid #ddd;"><br><br>
   
   <b>2. Publicação de Vagas (Lógica de Restaurante)</b><br>
-  <img src="public/img/vagas.png" width="800" style="border-radius: 8px; border: 1px solid #ddd;"><br><br>
+  <img src="public/img/pub_vaga.png" width="800" style="border-radius: 8px; border: 1px solid #ddd;"><br><br>
 
   <b>3. Agenda Confirmada (Lógica de Garçom)</b><br>
-  <img src="public/img/agenda.png" width="800" style="border-radius: 8px; border: 1px solid #ddd;">
+  <img src="public/img/agenda_garcom.png" width="800" style="border-radius: 8px; border: 1px solid #ddd;">
 </div>
 
 ---
