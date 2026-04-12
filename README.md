@@ -1,59 +1,91 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center">
+  <img src="https://laravel.com/img/logomark.min.svg" alt="Laravel Logo" width="100">
+  <h1>🍴 Trampo Gastro</h1>
+  
+  <p><b>A conexão definitiva entre restaurantes e talentos freelancers.</b></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+  <img src="https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP">
+  <img src="https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel">
+  <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL">
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind">
+  <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite">
+</div>
 
-## About Laravel
+<hr>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 📖 Sobre o Projeto
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+O **Trampo Gastro** é uma plataforma Full-Stack desenvolvida para otimizar a gestão de mão de obra no setor gastronômico. O sistema permite que restaurantes publiquem vagas pontuais para garçons freelancers, gerenciando todo o ciclo de vida da vaga: desde a publicação e candidatura até a aprovação e confirmação na agenda.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🛠️ Stack Tecnológica
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+<table align="center">
+  <tr>
+    <td align="center"><b>Backend</b></td>
+    <td align="center"><b>Frontend</b></td>
+    <td align="center"><b>Persistência</b></td>
+  </tr>
+  <tr>
+    <td>PHP 8.1+ & Laravel Framework</td>
+    <td>Blade Templates & Tailwind CSS</td>
+    <td>MySQL (Banco de Dados Relacional)</td>
+  </tr>
+  <tr>
+    <td align="center"><b>Autenticação</b></td>
+    <td align="center"><b>Assets</b></td>
+    <td align="center"><b>Ambiente</b></td>
+  </tr>
+  <tr>
+    <td>Laravel Breeze (RBAC)</td>
+    <td>Vite & Node.js</td>
+    <td>Composer & Artisan</td>
+  </tr>
+</table>
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## 🏗️ Engenharia e Arquitetura
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+O projeto foi construído seguindo rigorosos padrões de engenharia de software para garantir escalabilidade e segurança:
 
-### Premium Partners
+<ul>
+  <li><b>Padrão MVC:</b> Separação lógica entre Modelos de dados, Views de interface e Controllers de fluxo.</li>
+  <li><b>Segurança RBAC:</b> Controle de acesso baseado em papéis através de Middlewares customizados.</li>
+  <li><b>Transações ACID:</b> Implementação de <code>DB::transaction</code> para garantir atomicidade em processos críticos (aprovação simultânea de candidatura e fechamento de vaga).</li>
+  <li><b>Proteção de Dados:</b> Uso de Eloquent ORM contra <i>SQL Injection</i> e sanitização via Blade contra <i>XSS</i>.</li>
+</ul>
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## 📸 Demonstração
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+<div align="center">
+  <h3>1. Dashboard Inteligente</h3>
+  <p>Interface adaptativa que altera menus e permissões com base no perfil logado.</p>
+  <img src="public/img/dashboard.png" width="800" alt="Dashboard">
 
-## Code of Conduct
+  <br><br>
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+  <h3>2. Gestão de Candidatos (Visão Restaurante)</h3>
+  <p>Filtro de garçons e aprovação instantânea com atualização de status em tempo real.</p>
+  <img src="public/img/vagas.png" width="800" alt="Gestão de Vagas">
 
-## Security Vulnerabilities
+  <br><br>
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+  <h3>3. Agenda Confirmada (Visão Garçom)</h3>
+  <p>Visualização clara dos eventos aceitos para organização profissional do freelancer.</p>
+  <img src="public/img/agenda.png" width="800" alt="Agenda">
+</div>
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## ⚙️ Instalação Local
+
+Siga os passos abaixo para rodar o projeto em sua máquina:
+
+1. **Clonagem do Repositório**
+```bash
+git clone [https://github.com/seu-usuario/trampo-gastro.git](https://github.com/seu-usuario/trampo-gastro.git)
+cd trampo-gastro
