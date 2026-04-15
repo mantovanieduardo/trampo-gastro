@@ -64,7 +64,10 @@
                                         @csrf
                                         <button type="submit"
                                                 class="inline-flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white py-1.5 px-3 rounded-lg text-xs font-semibold transition-colors">
-                                            ✅ Aprovar Garçom
+                                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                            </svg>
+                                            Aprovar Garçom
                                         </button>
                                     </form>
                                 @elseif($candidato->status == 'aceito')
