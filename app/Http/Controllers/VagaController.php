@@ -147,14 +147,12 @@ class VagaController extends Controller
             'titulo'     => 'required|string|min:5|max:100', // Obrigatório, texto, entre 5 e 100 letras
             'valor_pago' => 'required|numeric|min:10',       // Obrigatório, número, no mínimo 10 reais
         ], [
-            // Mensagens de erro amigáveis em português
             'titulo.required' => 'O título da vaga é obrigatório.',
             'titulo.min'      => 'O título deve ter pelo menos 5 caracteres.',
             'valor_pago.numeric' => 'O valor deve ser um número válido.',
             'valor_pago.min'  => 'O valor da diária não pode ser menor que R$ 10,00.'
         ]);
 
-        // 2. Busca o restaurante... (resto do código continua igual)
         $restaurante = DB::table('restaurantes')->where('usuario_id', Auth::id())->first();
         
         if (!$restaurante) {
