@@ -5,10 +5,10 @@
         </h2>
     </x-slot>
 
-    <div class="max-w-4xl">
+    <div class="max-w-4xl space-y-6">
 
         <!-- Welcome banner -->
-        <div class="mb-6 rounded-xl bg-gray-900 px-8 py-6 flex items-center gap-4">
+        <div class="rounded-xl bg-gray-900 px-8 py-6 flex items-center gap-4">
             <div class="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center flex-shrink-0">
                 <span class="text-xl font-bold text-white">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
             </div>
@@ -18,8 +18,29 @@
             </div>
         </div>
 
-        <!-- Cards -->
         @if(Auth::user()->tipo == 'restaurante')
+
+            <!-- Stats restaurante -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 text-center">
+                    <p class="text-3xl font-bold text-gray-900">{{ $stats['total_vagas'] ?? 0 }}</p>
+                    <p class="text-xs text-gray-500 mt-1 font-medium">Total de Vagas</p>
+                </div>
+                <div class="bg-white rounded-xl border border-green-100 shadow-sm p-5 text-center">
+                    <p class="text-3xl font-bold text-green-600">{{ $stats['vagas_abertas'] ?? 0 }}</p>
+                    <p class="text-xs text-gray-500 mt-1 font-medium">Vagas Abertas</p>
+                </div>
+                <div class="bg-white rounded-xl border border-yellow-100 shadow-sm p-5 text-center">
+                    <p class="text-3xl font-bold text-yellow-500">{{ $stats['candidaturas_pendentes'] ?? 0 }}</p>
+                    <p class="text-xs text-gray-500 mt-1 font-medium">Candidaturas Pendentes</p>
+                </div>
+                <div class="bg-white rounded-xl border border-amber-100 shadow-sm p-5 text-center">
+                    <p class="text-3xl font-bold text-amber-500">{{ $stats['contratados'] ?? 0 }}</p>
+                    <p class="text-xs text-gray-500 mt-1 font-medium">Garçons Contratados</p>
+                </div>
+            </div>
+
+            <!-- Ações restaurante -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow">
                     <div class="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center mb-4">
@@ -27,14 +48,13 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                         </svg>
                     </div>
-                    <h4 class="font-semibold text-gray-900 mb-1">Gerenciar Vagas</h4>
-                    <p class="text-sm text-gray-500 mb-4">Publique novas oportunidades para freelancers.</p>
+                    <h4 class="font-semibold text-gray-900 mb-1">Publicar Nova Vaga</h4>
+                    <p class="text-sm text-gray-500 mb-4">Crie uma oportunidade e encontre o garçom ideal.</p>
                     <a href="{{ route('vagas.create') }}"
                        class="inline-flex items-center px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold rounded-lg transition-colors">
                         + Cadastrar Nova Vaga
                     </a>
                 </div>
-
                 <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow">
                     <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center mb-4">
                         <svg class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -49,7 +69,42 @@
                     </a>
                 </div>
             </div>
+
         @else
+
+            <!-- Stats garçom -->
+            <div class="grid grid-cols-3 gap-4">
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 text-center">
+                    <p class="text-3xl font-bold text-gray-900">{{ $stats['candidaturas_enviadas'] ?? 0 }}</p>
+                    <p class="text-xs text-gray-500 mt-1 font-medium">Candidaturas</p>
+                </div>
+                <div class="bg-white rounded-xl border border-yellow-100 shadow-sm p-5 text-center">
+                    <p class="text-3xl font-bold text-yellow-500">{{ $stats['pendentes'] ?? 0 }}</p>
+                    <p class="text-xs text-gray-500 mt-1 font-medium">Em Análise</p>
+                </div>
+                <div class="bg-white rounded-xl border border-green-100 shadow-sm p-5 text-center">
+                    <p class="text-3xl font-bold text-green-600">{{ $stats['trabalhos_confirmados'] ?? 0 }}</p>
+                    <p class="text-xs text-gray-500 mt-1 font-medium">Confirmados</p>
+                </div>
+            </div>
+
+            <!-- Próximo trabalho -->
+            @if(!empty($stats['proximo_trabalho']))
+                <div class="bg-green-50 border border-green-200 rounded-xl p-5 flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs font-semibold text-green-700 uppercase tracking-wider">Próximo trabalho</p>
+                        <p class="font-semibold text-green-900">{{ $stats['proximo_trabalho']->titulo_vaga }}</p>
+                        <p class="text-sm text-green-700">{{ date('d/m/Y \à\s H:i', strtotime($stats['proximo_trabalho']->data_hora_inicio)) }}</p>
+                    </div>
+                </div>
+            @endif
+
+            <!-- Ações garçom -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow">
                     <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center mb-4">
@@ -64,7 +119,6 @@
                         Buscar Vagas
                     </a>
                 </div>
-
                 <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow">
                     <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center mb-4">
                         <svg class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -79,7 +133,7 @@
                     </a>
                 </div>
             </div>
-        @endif
 
+        @endif
     </div>
 </x-app-layout>

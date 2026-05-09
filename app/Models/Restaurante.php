@@ -6,10 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Restaurante extends Model
 {
-    // Nome da tabela (já que o Laravel esperaria "restaurantes" no plural)
     protected $table = 'restaurantes';
-    
-    // Chave primária (já que na sua imagem é restaurante_id e não apenas id)
     protected $primaryKey = 'restaurante_id';
 
     protected $fillable = [
@@ -18,6 +15,17 @@ class Restaurante extends Model
         'logotipo',
         'endereco',
         'cidade',
-        'fotos_galeria'
+        'fotos_galeria',
+        'cnpj',
     ];
+
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'usuario_id');
+    }
+
+    public function vagas()
+    {
+        return $this->hasMany(Vaga::class, 'restaurante_id', 'restaurante_id');
+    }
 }

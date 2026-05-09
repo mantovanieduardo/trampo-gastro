@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"C:\\\\laragon\\\\www\\\\sistema-restaurante\" -Directory)",
+      "Bash(Select-Object -ExpandProperty Name)",
+      "Bash(find /c/laragon/www/sistema-restaurante/app -type f -name \"*.php\" | sort)",
+      "Bash(find /c/laragon/www/sistema-restaurante/database -type f -name \"*.php\" | sort)",
+      "Bash(find /c/laragon/www/sistema-restaurante/resources/views -type f -name \"*.blade.php\" | head -50)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  }
+}
