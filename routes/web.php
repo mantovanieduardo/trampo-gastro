@@ -26,12 +26,12 @@ Route::middleware('auth')->group(function () {
 
     // Vagas (acessível a todos logados)
     Route::get('/vagas', [VagaController::class, 'index'])->name('vagas.index');
-    Route::get('/vagas/{id}', [VagaController::class, 'show'])->name('vagas.show');
 
     // Avaliações
     Route::post('/avaliacoes', [AvaliacaoController::class, 'store'])->name('avaliacoes.store');
 
     // --- SÓ RESTAURANTE ---
+    // IMPORTANTE: create deve vir ANTES de {id} para não ser capturado como parâmetro
     Route::middleware('checkTipo:restaurante')->group(function () {
         Route::get('/vagas/create', [VagaController::class, 'create'])->name('vagas.create');
         Route::post('/vagas', [VagaController::class, 'store'])->name('vagas.store');
@@ -39,6 +39,9 @@ Route::middleware('auth')->group(function () {
         Route::patch('/vagas/{id}/fechar', [VagaController::class, 'fechar'])->name('vagas.fechar');
         Route::patch('/vagas/{id}/reabrir', [VagaController::class, 'reabrir'])->name('vagas.reabrir');
     });
+
+    // Rota de detalhes DEPOIS do create para não capturar /vagas/create como {id}
+    Route::get('/vagas/{id}', [VagaController::class, 'show'])->name('vagas.show');
 
     // Aprovar candidato (restaurante)
     Route::post('/candidaturas/{id}/aprovar', [VagaController::class, 'aprovarCandidato'])
