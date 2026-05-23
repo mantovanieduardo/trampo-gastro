@@ -3,7 +3,13 @@
         <div class="flex items-center justify-between">
             <div>
                 <h2 class="text-lg font-semibold text-gray-800 leading-tight">Candidatos</h2>
-                <p class="text-sm text-gray-400 mt-0.5">{{ $vaga->titulo_vaga }}</p>
+                <p class="text-sm text-gray-400 mt-0.5">
+                    {{ $vaga->titulo_vaga }}
+                    &mdash;
+                    <span class="{{ $aprovados >= ($vaga->vagas_necessarias ?? 1) ? 'text-green-600' : 'text-amber-600' }} font-medium">
+                        {{ $aprovados }}/{{ $vaga->vagas_necessarias ?? 1 }} vagas preenchidas
+                    </span>
+                </p>
             </div>
             <a href="{{ route('vagas.index') }}" class="text-sm text-gray-400 hover:text-gray-600 transition-colors">
                 &larr; Voltar para vagas
@@ -40,11 +46,17 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <a href="{{ route('garcons.show', $candidato->user_id) }}"
                                    class="flex items-center gap-3 group">
-                                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-100 transition-colors">
-                                        <span class="text-xs font-bold text-gray-600 group-hover:text-amber-700">
-                                            {{ strtoupper(substr($candidato->nome_garcom, 0, 1)) }}
-                                        </span>
-                                    </div>
+                                    @if($candidato->foto_perfil)
+                                        <img src="{{ Storage::url($candidato->foto_perfil) }}"
+                                             alt="{{ $candidato->nome_garcom }}"
+                                             class="w-8 h-8 rounded-full object-cover flex-shrink-0">
+                                    @else
+                                        <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-100 transition-colors">
+                                            <span class="text-xs font-bold text-gray-600 group-hover:text-amber-700">
+                                                {{ strtoupper(substr($candidato->nome_garcom, 0, 1)) }}
+                                            </span>
+                                        </div>
+                                    @endif
                                     <span class="text-sm font-medium text-gray-900 group-hover:text-amber-600 transition-colors">
                                         {{ $candidato->nome_garcom }}
                                     </span>
@@ -64,6 +76,11 @@
                                         <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
                                         Contratado
                                     </span>
+                                @elseif($candidato->status == 'recusado')
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-red-50 text-red-700 ring-1 ring-red-200">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                                        Recusado
+                                    </span>
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -77,6 +94,17 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                                                 </svg>
                                                 Aprovar
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('candidaturas.recusar', $candidato->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit"
+                                                    onclick="return confirm('Recusar este candidato?')"
+                                                    class="inline-flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 py-1.5 px-3 rounded-lg text-xs font-semibold transition-colors ring-1 ring-red-200">
+                                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                                </svg>
+                                                Recusar
                                             </button>
                                         </form>
                                     @elseif($candidato->status == 'aceito')
@@ -142,10 +170,20 @@
                                                 </div>
                                             </div>
                                         @else
-                                            <span class="text-xs text-gray-400 italic">Avaliado ✓</span>
+                                            <span class="text-xs text-gray-400 italic">Avaliado</span>
                                         @endif
+                                        <!-- Botão mensagem para aprovados -->
+                                        <a href="{{ route('mensagens.show', [$vaga->vaga_id, $candidato->user_id]) }}"
+                                           class="inline-flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 py-1.5 px-3 rounded-lg text-xs font-semibold transition-colors ring-1 ring-blue-200">
+                                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                                            </svg>
+                                            Mensagem
+                                        </a>
                                     @else
-                                        <span class="text-gray-400 text-xs">Vaga fechada</span>
+                                        @if($candidato->status != 'recusado')
+                                            <span class="text-gray-400 text-xs">Vaga fechada</span>
+                                        @endif
                                     @endif
 
                                     <a href="{{ route('garcons.show', $candidato->user_id) }}"

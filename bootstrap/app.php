@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // REGISTRO DO SEU MIDDLEWARE DE SEGURANÇA
         $middleware->alias([
             'checkTipo' => \App\Http\Middleware\CheckTipo::class,
+            'admin'     => \App\Http\Middleware\CheckAdmin::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

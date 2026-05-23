@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Vaga;
 use App\Models\Avaliacao;
+use App\Models\Notificacao;
 use App\Mail\GarcomAprovado;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -25,9 +26,35 @@ class VagaController extends Controller
             $query->where('status_vaga', $request->status);
         }
 
+        if ($request->filled('data_inicio')) {
+            $query->where('data_hora_inicio', '>=', $request->data_inicio . ' 00:00:00');
+        }
+
+        if ($request->filled('data_fim')) {
+            $query->where('data_hora_inicio', '<=', $request->data_fim . ' 23:59:59');
+        }
+
+        if ($request->filled('valor_min')) {
+            $query->where('valor_diaria', '>=', $request->valor_min);
+        }
+
+        if ($request->filled('valor_max')) {
+            $query->where('valor_diaria', '<=', $request->valor_max);
+        }
+
         $vagas = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 
-        return view('vagas.index', compact('vagas'));
+        // Para garçom: candidaturas pendentes (para exibir botão cancelar)
+        $candidaturasPendentes = [];
+        if (Auth::check() && Auth::user()->tipo === 'garcom') {
+            $candidaturasPendentes = DB::table('candidaturas')
+                ->where('usuario_id', Auth::id())
+                ->where('status', 'pendente')
+                ->pluck('id', 'vaga_id')
+                ->toArray();
+        }
+
+        return view('vagas.index', compact('vagas', 'candidaturasPendentes'));
     }
 
     // Detalhes de uma vaga
@@ -39,6 +66,7 @@ class VagaController extends Controller
             ->first();
 
         $totalCandidatos = DB::table('candidaturas')->where('vaga_id', $id)->count();
+        $aprovados = DB::table('candidaturas')->where('vaga_id', $id)->where('status', 'aceito')->count();
 
         // Verifica se o garçom já se candidatou
         $jaCandidatou = false;
@@ -49,7 +77,7 @@ class VagaController extends Controller
                 ->exists();
         }
 
-        return view('vagas.show', compact('vaga', 'restaurante', 'totalCandidatos', 'jaCandidatou'));
+        return view('vagas.show', compact('vaga', 'restaurante', 'totalCandidatos', 'jaCandidatou', 'aprovados'));
     }
 
     // Exibe o formulário de criação
@@ -62,16 +90,17 @@ class VagaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'titulo'           => 'required|string|min:5|max:100',
-            'valor_pago'       => 'required|numeric|min:10',
-            'data_hora_inicio' => 'required|date|after:now',
+            'titulo'             => 'required|string|min:5|max:100',
+            'valor_pago'         => 'required|numeric|min:10',
+            'data_hora_inicio'   => 'required|date|after:now',
+            'vagas_necessarias'  => 'nullable|integer|min:1|max:100',
         ], [
-            'titulo.required'          => 'O título da vaga é obrigatório.',
-            'titulo.min'               => 'O título deve ter pelo menos 5 caracteres.',
-            'valor_pago.numeric'       => 'O valor deve ser um número válido.',
-            'valor_pago.min'           => 'O valor da diária não pode ser menor que R$ 10,00.',
+            'titulo.required'           => 'O título da vaga é obrigatório.',
+            'titulo.min'                => 'O título deve ter pelo menos 5 caracteres.',
+            'valor_pago.numeric'        => 'O valor deve ser um número válido.',
+            'valor_pago.min'            => 'O valor da diária não pode ser menor que R$ 10,00.',
             'data_hora_inicio.required' => 'A data e hora de início são obrigatórias.',
-            'data_hora_inicio.after'   => 'A data de início deve ser no futuro.',
+            'data_hora_inicio.after'    => 'A data de início deve ser no futuro.',
         ]);
 
         $restaurante = DB::table('restaurantes')->where('usuario_id', Auth::id())->first();
@@ -81,13 +110,14 @@ class VagaController extends Controller
         }
 
         Vaga::create([
-            'restaurante_id'   => $restaurante->restaurante_id,
-            'titulo_vaga'      => strip_tags($request->titulo),
-            'descricao'        => strip_tags($request->descricao),
-            'tipo_contrato'    => 'Freelancer',
-            'valor_diaria'     => $request->valor_pago,
-            'status_vaga'      => 'aberta',
-            'data_hora_inicio' => $request->data_hora_inicio,
+            'restaurante_id'    => $restaurante->restaurante_id,
+            'titulo_vaga'       => strip_tags($request->titulo),
+            'descricao'         => strip_tags($request->descricao),
+            'tipo_contrato'     => 'Freelancer',
+            'valor_diaria'      => $request->valor_pago,
+            'status_vaga'       => 'aberta',
+            'data_hora_inicio'  => $request->data_hora_inicio,
+            'vagas_necessarias' => $request->vagas_necessarias ?? 1,
         ]);
 
         return redirect()->route('vagas.index')->with('sucesso', 'Vaga publicada com sucesso!');
@@ -135,7 +165,7 @@ class VagaController extends Controller
         $candidaturas = DB::table('candidaturas')
             ->join('users', 'candidaturas.usuario_id', '=', 'users.id')
             ->where('candidaturas.vaga_id', $id)
-            ->select('candidaturas.*', 'users.name as nome_garcom', 'users.email', 'users.id as user_id')
+            ->select('candidaturas.*', 'users.name as nome_garcom', 'users.email', 'users.id as user_id', 'users.foto_perfil')
             ->get();
 
         // Avaliações já feitas pelo restaurante nesta vaga
@@ -144,7 +174,9 @@ class VagaController extends Controller
             ->pluck('avaliado_id')
             ->toArray();
 
-        return view('vagas.candidatos', compact('vaga', 'candidaturas', 'avaliacoesFeitas'));
+        $aprovados = DB::table('candidaturas')->where('vaga_id', $id)->where('status', 'aceito')->count();
+
+        return view('vagas.candidatos', compact('vaga', 'candidaturas', 'avaliacoesFeitas', 'aprovados'));
     }
 
     // Aprovar candidato
@@ -163,14 +195,31 @@ class VagaController extends Controller
             return redirect()->back()->with('error', 'Ação não autorizada.');
         }
 
-        DB::transaction(function () use ($candidatura, $vaga) {
+        DB::transaction(function () use ($candidatura, $vaga, $restaurante) {
             DB::table('candidaturas')
                 ->where('id', $candidatura->id)
                 ->update(['status' => 'aceito']);
 
-            DB::table('vagas')
+            // Verificar se atingiu o número de vagas necessárias
+            $aprovados = DB::table('candidaturas')
                 ->where('vaga_id', $vaga->vaga_id)
-                ->update(['status_vaga' => 'fechada']);
+                ->where('status', 'aceito')
+                ->count();
+
+            $vagasNecessarias = $vaga->vagas_necessarias ?? 1;
+            if ($aprovados >= $vagasNecessarias) {
+                DB::table('vagas')
+                    ->where('vaga_id', $vaga->vaga_id)
+                    ->update(['status_vaga' => 'fechada']);
+            }
+
+            // Notificar garçom aprovado
+            Notificacao::create([
+                'user_id'  => $candidatura->usuario_id,
+                'titulo'   => 'Parabéns! Você foi aprovado!',
+                'mensagem' => 'Você foi aprovado para a vaga "' . $vaga->titulo_vaga . '" no ' . $restaurante->nome_fantasia . '.',
+                'link'     => route('agenda.index'),
+            ]);
         });
 
         // Enviar e-mail de notificação ao garçom
@@ -192,6 +241,69 @@ class VagaController extends Controller
         }
 
         return redirect()->back()->with('sucesso', 'Garçom contratado! Um e-mail de confirmação foi enviado.');
+    }
+
+    // Recusar candidato
+    public function recusarCandidato($candidaturaId)
+    {
+        $candidatura = DB::table('candidaturas')->where('id', $candidaturaId)->first();
+
+        if (!$candidatura) {
+            return redirect()->back()->with('error', 'Candidatura não encontrada.');
+        }
+
+        $vaga = DB::table('vagas')->where('vaga_id', $candidatura->vaga_id)->first();
+        $restaurante = DB::table('restaurantes')->where('usuario_id', Auth::id())->first();
+
+        if (!$restaurante || $vaga->restaurante_id !== $restaurante->restaurante_id) {
+            return redirect()->back()->with('error', 'Ação não autorizada.');
+        }
+
+        DB::table('candidaturas')
+            ->where('id', $candidaturaId)
+            ->update(['status' => 'recusado']);
+
+        // Notificar garçom recusado
+        Notificacao::create([
+            'user_id'  => $candidatura->usuario_id,
+            'titulo'   => 'Candidatura não aprovada',
+            'mensagem' => 'Infelizmente sua candidatura para a vaga "' . $vaga->titulo_vaga . '" não foi aprovada desta vez.',
+            'link'     => route('vagas.index'),
+        ]);
+
+        return redirect()->back()->with('sucesso', 'Candidato recusado.');
+    }
+
+    // Garçom cancela candidatura pendente
+    public function cancelarCandidatura($candidaturaId)
+    {
+        $candidatura = DB::table('candidaturas')
+            ->where('id', $candidaturaId)
+            ->where('usuario_id', Auth::id())
+            ->where('status', 'pendente')
+            ->first();
+
+        if (!$candidatura) {
+            return redirect()->back()->with('error', 'Candidatura não encontrada ou não pode ser cancelada.');
+        }
+
+        $vaga = DB::table('vagas')->where('vaga_id', $candidatura->vaga_id)->first();
+
+        DB::table('candidaturas')->where('id', $candidaturaId)->delete();
+
+        // Notificar restaurante
+        $restaurante = DB::table('restaurantes')->where('restaurante_id', $vaga->restaurante_id)->first();
+        if ($restaurante) {
+            $garcom = DB::table('users')->where('id', Auth::id())->first();
+            Notificacao::create([
+                'user_id'  => $restaurante->usuario_id,
+                'titulo'   => 'Candidatura cancelada',
+                'mensagem' => $garcom->name . ' cancelou a candidatura para a vaga "' . $vaga->titulo_vaga . '".',
+                'link'     => route('vagas.candidatos', $vaga->vaga_id),
+            ]);
+        }
+
+        return redirect()->back()->with('sucesso', 'Candidatura cancelada com sucesso.');
     }
 
     // Garçom se candidata a uma vaga
@@ -223,6 +335,18 @@ class VagaController extends Controller
             'updated_at' => now(),
         ]);
 
+        // Notificar restaurante
+        $restaurante = DB::table('restaurantes')->where('restaurante_id', $vaga->restaurante_id)->first();
+        if ($restaurante) {
+            $garcom = Auth::user();
+            Notificacao::create([
+                'user_id'  => $restaurante->usuario_id,
+                'titulo'   => 'Nova candidatura recebida!',
+                'mensagem' => $garcom->name . ' se candidatou para a vaga "' . $vaga->titulo_vaga . '".',
+                'link'     => route('vagas.candidatos', $id),
+            ]);
+        }
+
         return redirect()->back()->with('sucesso', 'Candidatura enviada com sucesso!');
     }
 
@@ -240,10 +364,12 @@ class VagaController extends Controller
             ->where('candidaturas.usuario_id', Auth::id())
             ->where('candidaturas.status', 'aceito')
             ->select(
+                'candidaturas.id as candidatura_id',
                 'candidaturas.vaga_id',
                 'vagas.titulo_vaga',
                 'vagas.valor_diaria',
                 'vagas.data_hora_inicio',
+                'restaurantes.restaurante_id',
                 'restaurantes.nome_fantasia as restaurante',
                 'u_restaurante.id as restaurante_user_id',
                 'vagas.status_vaga'

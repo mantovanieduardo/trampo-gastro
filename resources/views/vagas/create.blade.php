@@ -53,7 +53,7 @@
                                   placeholder="Ex: Servir bebidas, auxiliar na limpeza das mesas...">{{ old('descricao') }}</textarea>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
                             <label for="valor_pago" class="block text-sm font-semibold text-gray-700 mb-1.5">Valor do Cachê (R$)</label>
                             <div class="relative">
@@ -72,6 +72,14 @@
                                    class="w-full border-gray-200 focus:border-amber-400 focus:ring-amber-400 rounded-lg shadow-sm text-sm"
                                    value="{{ old('data_hora_inicio') }}" required>
                         </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <label for="vagas_necessarias" class="block text-sm font-semibold text-gray-700 mb-1.5">Número de Vagas</label>
+                        <input type="number" name="vagas_necessarias" id="vagas_necessarias" min="1" max="100"
+                               class="w-full md:w-40 border-gray-200 focus:border-amber-400 focus:ring-amber-400 rounded-lg shadow-sm text-sm"
+                               value="{{ old('vagas_necessarias', 1) }}">
+                        <p class="text-xs text-gray-400 mt-1.5">Quantos garçons você precisa para este turno?</p>
                     </div>
 
                     <div class="flex items-center justify-end gap-3 pt-5 border-t border-gray-100">

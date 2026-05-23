@@ -20,9 +20,15 @@
         <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
             <div class="flex items-start gap-6">
                 <!-- Avatar -->
-                <div class="w-16 h-16 rounded-full bg-amber-500 flex items-center justify-center flex-shrink-0">
-                    <span class="text-2xl font-bold text-white">{{ strtoupper(substr($garcom->name, 0, 1)) }}</span>
-                </div>
+                @if($garcom->foto_perfil)
+                    <img src="{{ Storage::url($garcom->foto_perfil) }}"
+                         alt="{{ $garcom->name }}"
+                         class="w-16 h-16 rounded-full object-cover flex-shrink-0">
+                @else
+                    <div class="w-16 h-16 rounded-full bg-amber-500 flex items-center justify-center flex-shrink-0">
+                        <span class="text-2xl font-bold text-white">{{ strtoupper(substr($garcom->name, 0, 1)) }}</span>
+                    </div>
+                @endif
                 <div class="flex-1 min-w-0">
                     <h1 class="text-xl font-bold text-gray-900">{{ $garcom->name }}</h1>
                     <p class="text-sm text-gray-500">{{ $garcom->email }}</p>
@@ -77,7 +83,10 @@
                         <div class="px-6 py-4 flex items-center justify-between">
                             <div>
                                 <p class="text-sm font-medium text-gray-900">{{ $trabalho->titulo_vaga }}</p>
-                                <p class="text-xs text-gray-500 mt-0.5">{{ $trabalho->restaurante }}</p>
+                                <a href="{{ route('restaurantes.show', $trabalho->restaurante_id) }}"
+                                   class="text-xs text-amber-600 hover:text-amber-700 transition-colors mt-0.5 block">
+                                    {{ $trabalho->restaurante }}
+                                </a>
                             </div>
                             <div class="text-right flex-shrink-0 ml-4">
                                 <p class="text-sm font-semibold text-gray-800">R$ {{ number_format($trabalho->valor_diaria, 2, ',', '.') }}</p>

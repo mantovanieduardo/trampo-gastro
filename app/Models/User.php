@@ -17,18 +17,26 @@ class User extends Authenticatable
         'email',
         'password',
         'tipo',
+        'foto_perfil',
+        'is_admin',
     ];
- 
+
     protected $hidden = [
         'password',
         'remember_token',
     ];
- 
+
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
+    }
+
+    public function notificacoes()
+    {
+        return $this->hasMany(Notificacao::class);
     }
 }
