@@ -37,7 +37,8 @@ class GarcomController extends Controller
                 'vagas.titulo_vaga',
                 'vagas.data_hora_inicio',
                 'vagas.valor_diaria',
-                'restaurantes.nome_fantasia as restaurante'
+                'restaurantes.nome_fantasia as restaurante',
+                'restaurantes.restaurante_id'
             )
             ->orderBy('vagas.data_hora_inicio', 'desc')
             ->limit(10)

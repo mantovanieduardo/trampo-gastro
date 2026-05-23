@@ -17,6 +17,7 @@ class Vaga extends Model
         'valor_diaria',
         'status_vaga',
         'data_hora_inicio',
+        'vagas_necessarias',
     ];
 
     protected $casts = [
